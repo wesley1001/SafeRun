@@ -1,20 +1,18 @@
-var React = require('react-native');
+import React from 'react';
+var ReactNative = require('react-native');
 var {
   StyleSheet,
   PropTypes,
   View,
-  Text,
   Dimensions,
-  TouchableOpacity,
-} = React;
+} = ReactNative;
 
 var MapView = require('react-native-maps');
-import Geolocate from './Geolocate';
 var { width, height } = Dimensions.get('window');
 
 const ASPECT_RATIO = width / height;
-const LATITUDE = 40.809733;
-const LONGITUDE = -73.961646;
+const LATITUDE = 41.809733;   //CU Campus
+const LONGITUDE = -73.961646;  
 const LATITUDE_DELTA = 0.0122;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const SPACE = 0.01;
@@ -25,6 +23,8 @@ function randomColor() {
 }
 
 var MainMap = React.createClass({
+  watchID: (null: ?number),
+  
   getInitialState() {
     return {
       region: {
@@ -33,27 +33,46 @@ var MainMap = React.createClass({
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA,
       },
-      
+
+      newRegion: {
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      },
       markers: [],
 
-      center: {
-        latitude: LATITUDE,
-        longitude: LONGITUDE,
-      },
-
-      location: { },
-
-      radius: 1700,
-
-      colorSet: true,
-
-      myColor:  "rgba(200, 200, 0, 0.5)",
+      initialRegion: {},
 
     };
   },
   componentDidMount() {
     console.log("MainMap component mounted");
-      return (<Geolocate getLocation={this.getCurrentLocation} ref="myLocation"/>);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log(position);
+        this.setState({region:{
+                              latitude: position.coords.latitude,
+                              longitude: position.coords.longitude,
+                              latitudeDelta: LATITUDE_DELTA,
+                              longitudeDelta: LONGITUDE_DELTA}});
+      },
+      (error) => alert(error.message),
+      {enableHighAccuracy: false, timeout: 5000, maximumAge: 5000}
+    );
+
+    // this.watchID = navigator.geolocation.watchPosition((position) => {
+        // this.setState({region:{
+        //                       latitude: position.coords.latitude,
+        //                       longitude: position.coords.longitude,
+        //                       latitudeDelta: LATITUDE_DELTA,
+        //                       longitudeDelta: LONGITUDE_DELTA}});
+    // });
+  },
+
+
+  componentWillUnmount() {
+    navigator.geolocation.clearWatch(this.watchID);
   },
 
   getCurrentLocation(data) {
@@ -62,9 +81,11 @@ var MainMap = React.createClass({
       });
   },
 
+  logData(data){
+    console.log(data);
+  },
+
   onMapPress(e) {
-    this.state.colorSet ? this.setState({myColor:"rgba(0, 200, 0, 0.75)"}) : this.setState({myColor:"rgba(200, 0, 0, 0.75)"}); 
-    this.state.colorSet ? this.setState({colorSet:false}) : this.setState({colorSet:true}); 
     this.setState({
       markers: [
         ...this.state.markers,
@@ -82,9 +103,12 @@ var MainMap = React.createClass({
      
         <MapView
           style={styles.map}
+          mapType="standard"
           initialRegion={this.state.region}
-          onPress={this.onMapPress}
-        >
+          region={this.state.region}
+          showUserLocation={true}
+          onRegionChangeComplete={this.logData}
+          onPress={this.onMapPress}>
           {this.state.markers.map
           (marker => (
             <MapView.Marker

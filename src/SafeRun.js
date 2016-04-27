@@ -23,7 +23,6 @@ import Observer from './Observer'
 import ObserverReady from './Observer/ObserverReady'
 import Exit from './Exit'
 import Timer from './Timer'
-import Geolocate from './Geolocate'
 
 var _navigator; 
 var sessionIncKey = 0;
@@ -273,9 +272,6 @@ var SafeRun = React.createClass({
 				return <Exit
 						back={this.back} 
 						exit={this.goToTop}	/>;
-
-			case 'Geolocate':
-				return <Geolocate/>;
 
 			default:
 				console.error('Unexpected Route:' + def.route);
