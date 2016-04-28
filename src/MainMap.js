@@ -61,17 +61,11 @@ var MainMap = React.createClass({
       {enableHighAccuracy: false, timeout: 5000, maximumAge: 5000}
     );
 
-    // this.watchID = navigator.geolocation.watchPosition((position) => {
-        // this.setState({region:{
-        //                       latitude: position.coords.latitude,
-        //                       longitude: position.coords.longitude,
-        //                       latitudeDelta: LATITUDE_DELTA,
-        //                       longitudeDelta: LONGITUDE_DELTA}});
-    // });
   },
 
 
   componentWillUnmount() {
+    console.log("Map unmounted");
     navigator.geolocation.clearWatch(this.watchID);
   },
 

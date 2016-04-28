@@ -285,8 +285,9 @@ var SafeRun = React.createClass({
 			<View style={styles.container}>
 				<Navigator
 					ref='navigator'
-					initialRoute={{route: 'facilitatorStart'}}
-					renderScene={this._renderScene}/>
+					initialRoute={{route: 'roleSelection'}}
+					renderScene={this._renderScene}
+					configureScene={(route, routeStack) => Navigator.SceneConfigs.FadeAndroid}/>
 			</View>
 		);
 	},
